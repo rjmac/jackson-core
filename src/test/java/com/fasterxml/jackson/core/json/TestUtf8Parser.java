@@ -191,4 +191,14 @@ public class TestUtf8Parser
 		assertEquals(parser.nextToken(), JsonToken.END_OBJECT);
 		parser.close();
 	}
+
+    public void testNullPrefixedFieldNames() throws Exception
+    {
+        String[] expectedTexts = { "{", "\u0000abc", "a", "abc", "b", "}" };
+        JsonParser parser = new JsonFactory().createParser("{\"\\u0000abc\" : \"a\", \"abc\" : \"b\"}".getBytes());
+        for(String expected : expectedTexts) {
+            parser.nextToken();
+            assertEquals(parser.getText(), expected);
+        }
+    }
 }
