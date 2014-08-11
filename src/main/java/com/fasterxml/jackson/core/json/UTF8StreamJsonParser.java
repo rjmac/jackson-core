@@ -1960,6 +1960,7 @@ public class UTF8StreamJsonParser
         }
         Name name = _symbols.findName(quads, qlen);
         if (name == null) {
+            quads[qlen - 1] = pad(quads[qlen - 1], currQuadBytes);
             name = addName(quads, qlen, currQuadBytes);
         }
         return name;
@@ -1971,10 +1972,16 @@ public class UTF8StreamJsonParser
     /**********************************************************
      */
 
+    private int pad(int q, int bytes) {
+        if(bytes == 4) return q;
+        return q | (-1 << (bytes << 3));
+    }
+
     private final Name findName(int q1, int lastQuadBytes)
         throws JsonParseException
     {
         // Usually we'll find it from the canonical symbol table already
+        q1 = pad(q1, lastQuadBytes);
         Name name = _symbols.findName(q1);
         if (name != null) {
             return name;
@@ -1988,6 +1995,7 @@ public class UTF8StreamJsonParser
         throws JsonParseException
     {
         // Usually we'll find it from the canonical symbol table already
+        q2 = pad(q2, lastQuadBytes);
         Name name = _symbols.findName(q1, q2);
         if (name != null) {
             return name;
@@ -2004,7 +2012,7 @@ public class UTF8StreamJsonParser
         if (qlen >= quads.length) {
             _quadBuffer = quads = growArrayBy(quads, quads.length);
         }
-        quads[qlen++] = lastQuad;
+        quads[qlen++] = pad(lastQuad, lastQuadBytes);
         Name name = _symbols.findName(quads, qlen);
         if (name == null) {
             return addName(quads, qlen, lastQuadBytes);
