@@ -1956,11 +1956,10 @@ public class UTF8StreamJsonParser
             if (qlen >= quads.length) {
                 _quadBuffer = quads = growArrayBy(quads, quads.length);
             }
-            quads[qlen++] = currQuad;
+            quads[qlen++] = pad(currQuad, currQuadBytes);
         }
         Name name = _symbols.findName(quads, qlen);
         if (name == null) {
-            quads[qlen - 1] = pad(quads[qlen - 1], currQuadBytes);
             name = addName(quads, qlen, currQuadBytes);
         }
         return name;
